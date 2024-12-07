@@ -1,5 +1,7 @@
 import { gql, request } from 'graphql-request'
 import { agentDetails, complainDetails } from '../agentdetails'
+import express from 'express'
+import axios from 'axios'
 
 const url = 'https://api.studio.thegraph.com/query/97511/w8s/version/latest'
 async function fetchSubgraphData(contractImage: string) {
@@ -70,3 +72,25 @@ async function fetchSubgraphData(contractImage: string) {
 }
 
 // fetchSubgraphData('0xe3fc9d71f20e64b9c88a46b419401061642a0078a8a70fe7b3259646026b1933')
+
+const app = express()
+const port = 3000
+
+app.get('/subgraph-data', async (req, res) => {
+    const contractImage = req.query.contractImage as string
+    if (!contractImage) {
+        return res.status(400).send('contractImage query parameter is required')
+    }
+
+    try {
+        const data = await fetchSubgraphData(contractImage)
+        res.json(data)
+    } catch (error) {
+        console.error(error)
+        res.status(500).send('An error occurred while fetching subgraph data')
+    }
+})
+
+app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`)
+})
