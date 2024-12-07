@@ -2,6 +2,8 @@ import { ethers } from "ethers";
 import { agentDetails } from "./agentdetails"
 import axios from 'axios';
 import { OpenAI } from "openai";
+import { generateLitActionCode } from "./lit-actions/generate";
+import { executeLitAction } from "./lit-actions/action";
 
 export async function txBuilder(uid: string, prompt: string){
     // const uid = '0x50bf4140b839544e3d41f7f02dc5a9365ef55b2a7d1cdacaaf1e5607554b0912'
@@ -55,13 +57,8 @@ const client = new OpenAI({
         {"role": "user", "content": prompt}
     ];
 
-    const response = await client.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages,
-    });
-
-    const reply = response.choices[0].message.content;
-    const parsedReply = JSON.parse(reply);
+    const litAction = await executeLitAction(messages)
+    const parsedReply = JSON.parse(litAction);
 
     const iface = new ethers.Interface(abi);
     const data = iface.encodeFunctionData(parsedReply.method, parsedReply.params);
@@ -93,12 +90,7 @@ const client = new OpenAI({
 
     let gasMessages = [gasSystemInstructions];
 
-    const gasResponse = await client.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: gasMessages,
-    });
-
-    const gasReply = gasResponse.choices[0].message.content;
+    const gasReply = await executeLitAction(gasMessages);
     const parsedGasReply = JSON.parse(gasReply);
 
     const txDetails = {

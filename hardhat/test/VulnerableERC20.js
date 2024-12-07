@@ -16,7 +16,6 @@ describe('Token contract', function () {
 
   it('should not allow transfers', async function () {
 
-    await expect(token.connect(owner).mint(addr1.address, 100)).to.be.fulfilled;
-    await expect(token.connect(owner).transfer(addr2.address, 100)).to.be.revertedWith('Transfers are disabled');
+    await expect(token.connect(owner).transfer(addr1.address, 100)).to.be.revertedWith('Transfers are disabled');
   });
 });

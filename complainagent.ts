@@ -4,6 +4,7 @@ import { scanForVulnerability } from ".";
 import { OpenAI } from "openai";
 import { runVulnerabilityTest } from "./hardhatagent";
 import { createAttestation } from "./eas-utils/eas";
+import { executeLitAction } from "./lit-actions/action";
 
 export async function postComplain(uid: string, prompt: string, contractAddress) {
     const AGGREGATOR = 'https://aggregator.walrus-testnet.walrus.space';
@@ -54,17 +55,11 @@ export async function postComplain(uid: string, prompt: string, contractAddress)
         { "role": "user", "content": prompt }
     ];
 
-    const response = await client.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages,
-    });
+    const litResponse = await executeLitAction(messages);
 
-    const res = response.choices[0].message.content;
-    console.log(JSON.parse(res).confidence);
-
-    if (JSON.parse(res).confidence > 0.7) {
+    if (JSON.parse(litResponse).confidence > 0.7) {
         try {
-            // await runVulnerabilityTest(vulnerability, contract, 'VulnerableERC20');
+            await runVulnerabilityTest(vulnerability, contract, 'VulnerableERC20');
             const attestation = await createAttestation(vulnerability.vulnerabilities[0].type, vulnerability.vulnerabilities[0].description, vulnerability.vulnerabilities[0].replication.method, contractAddress);
             console.log('Attestation:', attestation);
         } catch (error) {
@@ -73,3 +68,6 @@ export async function postComplain(uid: string, prompt: string, contractAddress)
     }
 
 }
+
+// Example usage
+postComplain('0x50bf4140b839544e3d41f7f02dc5a9365ef55b2a7d1cdacaaf1e5607554b0912', 'The transfer function is disabled', '0x1234567890123456789012345678901234567890');

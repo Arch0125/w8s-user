@@ -3,6 +3,7 @@ import path from 'path';
 import { exec } from 'child_process';
 import { OpenAI } from 'openai';
 import { createAttestation } from './eas-utils/eas';
+import { executeLitAction } from './lit-actions/action';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -86,12 +87,13 @@ also <contract_name>.deployed is not a function, use .waitForDeployment() instea
     const messages = [systemInstructions];
 
     try {
-        const response = await client.chat.completions.create({
-            model: 'gpt-3.5-turbo',
-            messages,
-        });
+        // const response = await client.chat.completions.create({
+        //     model: 'gpt-3.5-turbo',
+        //     messages,
+        // });
 
-        const aiTestCode = response.choices[0].message.content;
+        // const aiTestCode = response.choices[0].message.content;
+        const aiTestCode = await executeLitAction(messages);
         const testFolder = path.join(hardhatFolder, 'test');
         if (!fs.existsSync(testFolder)) {
             fs.mkdirSync(testFolder);
