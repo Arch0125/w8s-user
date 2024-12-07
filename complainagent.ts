@@ -68,6 +68,3 @@ export async function postComplain(uid: string, prompt: string, contractAddress)
     }
 
 }
-
-// Example usage
-postComplain('0x50bf4140b839544e3d41f7f02dc5a9365ef55b2a7d1cdacaaf1e5607554b0912', 'The transfer function is disabled', '0x1234567890123456789012345678901234567890');
