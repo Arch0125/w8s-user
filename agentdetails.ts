@@ -17,5 +17,7 @@ export async function agentDetails(uid: string) {
 
     const abiblobid = data[4].value.value
 
-    return { deployments:JSON.parse(deployments), abiblobid };
+    const contractblobid = data[3].value.value
+
+    return { deployments:JSON.parse(deployments), abiblobid, contractblobid };
 }

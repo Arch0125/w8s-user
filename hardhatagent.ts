@@ -117,7 +117,7 @@ async function runHardhatTests() {
 }
 
 // Main function to orchestrate the steps
-async function main(vulnerability, contractCode, contractName) {
+export async function runVulnerabilityTest(vulnerability, contractCode, contractName) {
     // Step 1: Copy contract to Hardhat's contracts folder
     await copyContractToHardhat(contractCode, contractName);
 
@@ -181,6 +181,6 @@ const contractName = 'VulnerableERC20';
 const contractAddress = "0xe5095505e2f35094Ab6C77373E5d6ABe3eEBB227"
 
 // Run the script
-main(exampleVulnerability, exampleContract, contractName, contractAddress)
-    .then(() => console.log('Automation complete'))
-    .catch((error) => console.error('Error during automation:', error));
+// main(exampleVulnerability, exampleContract, contractName)
+//     .then(() => console.log('Automation complete'))
+//     .catch((error) => console.error('Error during automation:', error));
