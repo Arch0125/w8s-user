@@ -69,4 +69,4 @@ export async function postComplain(uid: string, prompt: string, contractAddress)
 
 }
 
-postComplain('0xe3fc9d71f20e64b9c88a46b419401061642a0078a8a70fe7b3259646026b1933', 'The contract has a disabled transfer function, which locks the tokens preventing any transfers.', '0x2f0667b6354500507C02013FAc36481387F905Af');
+// postComplain('0xe3fc9d71f20e64b9c88a46b419401061642a0078a8a70fe7b3259646026b1933', 'The contract has a disabled transfer function, which locks the tokens preventing any transfers.', '0x2f0667b6354500507C02013FAc36481387F905Af');

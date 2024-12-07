@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Live Dashboard</h1>
+        <div class="search-bar">
+            <input type="text" id="contractImage" placeholder="Enter contractImage..." />
+            <button onclick="fetchAndDisplayData()">Search</button>
+        </div>
+        <div id="dashboard">
+            <!-- Data will be displayed here -->
+        </div>
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        async function fetchAndDisplayData() {
+            const contractImage = document.getElementById('contractImage').value;
+            const errorDiv = document.getElementById('error');
+            const dashboard = document.getElementById('dashboard');
+
+            // Clear previous data and errors
+            errorDiv.innerHTML = '';
+            dashboard.innerHTML = '';
+
+            if (!contractImage) {
+                errorDiv.innerHTML = 'Please enter a valid contractImage.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/subgraph-data?contractImage=${contractImage}`);
+                
+                // Check for successful response
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data from the server');
+                }
+
+                const data = await response.json();
+
+                dashboard.innerHTML = `
+                    <div class="section">
+                        <h2>Coverage</h2>
+                        <div class="card">
+                            <strong>Passed Tests:</strong> ${data.coverage.passedtests.join(', ')}<br>
+                            <strong>Failed Tests:</strong> ${data.coverage.failedtests.length ? data.coverage.failedtests.join(', ') : 'None'}<br>
+                            <strong>Branches:</strong> ${data.coverage.branches}%<br>
+                            <strong>Functions:</strong> ${data.coverage.functions}%<br>
+                            <strong>Lines:</strong> ${data.coverage.lines}%
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h2>Forced Assertions</h2>
+                        <div class="card">
+                            <strong>Forced:</strong> ${data.assertions.forced.length ? data.assertions.forced.join(', ') : 'None'}
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h2>Addresses</h2>
+                        <div class="card">${data.addresses.join('<br>')}</div>
+                    </div>
+                    <div class="section">
+                        <h2>Complains</h2>
+                        <div class="card">
+                            ${data.complains.map(complain => `
+                                <strong>Description:</strong> ${complain.description}<br>
+                                <strong>Methods:</strong> ${complain.method.join(', ')}<br><br>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                errorDiv.innerHTML = 'Error fetching data: ' + error.message;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

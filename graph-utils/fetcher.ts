@@ -2,6 +2,7 @@ import { gql, request } from 'graphql-request'
 import { agentDetails, complainDetails } from '../agentdetails'
 import express from 'express'
 import axios from 'axios'
+import cors from 'cors'
 
 const url = 'https://api.studio.thegraph.com/query/97511/w8s/version/latest'
 async function fetchSubgraphData(contractImage: string) {
@@ -74,6 +75,7 @@ async function fetchSubgraphData(contractImage: string) {
 // fetchSubgraphData('0xe3fc9d71f20e64b9c88a46b419401061642a0078a8a70fe7b3259646026b1933')
 
 const app = express()
+app.use(cors())
 const port = 3000
 
 app.get('/subgraph-data', async (req, res) => {

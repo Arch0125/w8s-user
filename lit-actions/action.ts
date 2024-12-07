@@ -72,6 +72,27 @@ export async function executeLitAction(messages) {
     const data = resp; // Process the response as needed
     console.log(data);
 
+    const provider = new ethers.providers.JsonRpcProvider("https://sepolia.base.org");
+  const wallet = new ethers.Wallet("${process.env.AGENT_KEY}", provider);
+
+  await Lit.Actions.runOnce({ waitForResponse: true, name: "txnSender" }, async () => {
+
+  const abi = [
+  "function createNewTask(string memory name) external returns (tuple(string name, uint32 taskCreatedBlock))"
+];
+
+    const contractAddress = "0x21a1a4169c99f6883b213e997dc873d9646b49ee";
+
+    const contract = new ethers.Contract(contractAddress, abi, wallet);
+
+  const taskName = "MyNewTask";
+
+  // Send the transaction to create a new task
+  console.log("Sending transaction to create a new task...");
+  const tx = await contract.createNewTask(JSON.stringify(data));
+  await tx.wait();
+    });
+
     LitActions.setResponse({ response: JSON.stringify({data:data}) });
   };
 
